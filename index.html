@@ -109,21 +109,6 @@ body {
 }
 .badge.free { background: var(--green); }
 .badge.official { background: #f59e0b; }
-/* 首页缩略图上的种草入口 */
-.thumb-grass {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,.48);
-  color: #fff; font-size: 11px;
-  padding: 5px 8px;
-  display: flex; align-items: center; gap: 4px;
-  backdrop-filter: blur(2px);
-}
-.thumb-grass-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; font-weight: 800; color: #fff; flex-shrink: 0;
-}
 .course-info { flex: 1; min-width: 0; }
 .c-title {
   font-size: 14px; font-weight: 500; color: #111; line-height: 1.45;
@@ -341,6 +326,51 @@ body {
   animation: cb .75s infinite;
 }
 @keyframes cb { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Sheet course header ────────────── */
+.sheet-course-hd {
+  display: flex; gap: 12px; align-items: center;
+  padding: 10px 16px 12px; background: #f7f7f7;
+  border-bottom: 1px solid #e8e8e8; flex-shrink: 0;
+}
+.sheet-cover-thumb {
+  width: 80px; height: 54px; border-radius: 8px;
+  flex-shrink: 0; display: flex; align-items: center;
+  justify-content: center; position: relative; overflow: hidden;
+}
+.sheet-cover-play {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255,255,255,.82);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #333;
+}
+.sheet-course-name {
+  font-size: 14px; font-weight: 600; color: #111; line-height: 1.4;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.sheet-course-meta { font-size: 12px; color: #888; margin-top: 4px; }
+
+/* ── Chat input bar ─────────────────── */
+.sheet-input-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px 26px; background: #fff;
+  border-top: 1px solid #f0f0f0; flex-shrink: 0;
+}
+.chat-input {
+  flex: 1; background: #f4f4f4; border: none; border-radius: 20px;
+  padding: 9px 14px; font-size: 14px; outline: none; color: #111;
+  font-family: inherit;
+}
+.chat-input::placeholder { color: #bbb; }
+.chat-send-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--green); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #fff; flex-shrink: 0; line-height: 1;
+  transition: background .15s;
+}
+.chat-send-btn:disabled { background: #ddd; cursor: default; }
 </style>
 </head>
 <body>
@@ -401,7 +431,12 @@ body {
         <span class="sheet-hd-title">卡卡种草</span>
         <div class="close-btn" id="close-btn">✕</div>
       </div>
+      <div class="sheet-course-hd" id="sheet-course-hd"></div>
       <div class="chat-area" id="chat-area"></div>
+      <div class="sheet-input-bar" id="sheet-input-bar">
+        <input class="chat-input" id="chat-input" type="text" placeholder="继续问卡卡..." />
+        <button class="chat-send-btn" id="chat-send" disabled>↑</button>
+      </div>
     </div>
   </div>
 
@@ -465,16 +500,16 @@ const COURSES = [
   },
   {
     id: 4,
-    courseId: '66c6cb393b953e00011a02e9',
+    courseId: '66d18d453f5eb800011c0546',
     userId:   '6a0542347be25e0001303179',
-    name: '《落（花开花落日升日没）》· 成品舞跟练 · 纯享版',
+    name: '健身房 · 胸部训练 · 进阶',
     difficulty: 'K3', level: '进阶',
-    duration: 3, calMin: 65, calMax: 100,
-    instructor: 'Keep 官方', rating: 8.3,
-    finishedCount: '32万', category: '舞蹈',
-    isFree: false, color: '#fce7f3',
-    desc: '中国古典舞成品舞跟练，涵盖身韵、舞姿、旋转等古典舞元素...',
-    mockGrass: `这节古典舞跟练课很适合你现在试试哦～既能满足你对运动的兴趣，又能轻松帮你推进减重目标🌸\n\n**1. 轻盈舞蹈燃脂，不伤旧伤更安心**\n课程是纯舞蹈跟练，动作以身韵和舞姿为主，没有高冲击跳跃，完美避开了你曾有过的手腕、腰、膝盖和肩部旧伤风险，运动起来更放心。\n\n**2. 碎片时间轻松动，新手也能有成就感**\n才3分钟的时长，随时能挤出时间练习。很多用户反馈"简单易学，跳完超有成就感"，像你这样刚开始接触运动的话，这种低压力的课程能帮你慢慢养成习惯。\n\n**3. 边跳边瘦，还能悄悄提升气质**\n跟着古风音乐舞动，既能消耗热量帮你减重，又能在抬手投足间练出古典韵味。不用器械，一小块空地就能开始，让运动变成一种享受～`,
+    duration: 48, calMin: 200, calMax: 300,
+    instructor: 'Keep 官方', rating: 9.2,
+    finishedCount: '6万', category: '力量',
+    isFree: false, isOfficial: true, color: '#ede9fe',
+    desc: '聚焦胸部增肌，使用杠铃、哑铃、龙门架，经典健美式肌肥大训练...',
+    mockGrass: `这节课目前不太适合你哦。你之前有手腕、腰部、膝盖和肩部的创伤性疾病，虽然现在处于恢复状态，但这节课程需要使用杠铃、哑铃、龙门架等器械进行进阶胸部训练，对这些部位的负荷较大，可能会影响恢复。咱们先从更基础的训练开始，慢慢来，要不要换个更温和的课程呢？`,
   },
 ];
 
@@ -483,6 +518,7 @@ const COURSES = [
 ══════════════════════════════════════════════════════ */
 let currentCourse = null;
 let abortCtrl = null;
+let conversationId = null;
 
 /* ══════════════════════════════════════════════════════
    HOME
@@ -493,10 +529,6 @@ function renderHome() {
       <div class="course-thumb" style="background:${c.color}">
         ${c.isFree     ? '<span class="badge free">免费</span>' : ''}
         ${c.isOfficial ? '<span class="badge official">官方精品</span>' : ''}
-        <div class="thumb-grass" onclick="event.stopPropagation();openGrass(${c.id})">
-          <div class="thumb-grass-dot">K</div>
-          <span>这节课适合我吗？</span>
-        </div>
       </div>
       <div class="course-info">
         <div class="c-title">${c.name}</div>
@@ -582,20 +614,25 @@ document.getElementById('back-btn').onclick = () => {
 function openGrass(id) {
   currentCourse = COURSES.find(c => c.id === id);
   if (abortCtrl) { abortCtrl.abort(); abortCtrl = null; }
+  conversationId = null;
 
   const c = currentCourse;
-  const area = document.getElementById('chat-area');
 
-  // 用户消息：课程卡 + 问句
+  // 课程头部
+  document.getElementById('sheet-course-hd').innerHTML = `
+    <div class="sheet-cover-thumb" style="background:${c.color}">
+      <div class="sheet-cover-play">▶</div>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="sheet-course-name">${c.name}</div>
+      <div class="sheet-course-meta">${c.difficulty} ${c.level} · ${c.duration} 分钟 · ★ ${c.rating}</div>
+    </div>
+  `;
+
+  // 聊天区：仅用户问句 + 卡卡loading
+  const area = document.getElementById('chat-area');
   area.innerHTML = `
     <div class="msg-user">
-      <div class="user-course-card">
-        <div class="user-card-thumb" style="background:${c.color}"></div>
-        <div>
-          <div class="user-card-name">${c.name}</div>
-          <div class="user-card-meta">${c.difficulty} · ${c.duration}min · ${c.calMin}–${c.calMax}kcal</div>
-        </div>
-      </div>
       <div class="bubble-user-q">这节课适合我吗？</div>
     </div>
     <div class="msg-kaka">
@@ -605,6 +642,12 @@ function openGrass(id) {
       </div>
     </div>
   `;
+
+  // 重置输入框
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+  input.value = '';
+  sendBtn.disabled = true;
 
   document.getElementById('overlay').classList.add('open');
   callDify(c);
@@ -760,6 +803,133 @@ async function callDify(course) {
     // 降级到 mock
     await mockStream(course.mockGrass, bubble);
   }
+
+  // 初始回答完成，开启输入框
+  document.getElementById('chat-send').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+/* ══════════════════════════════════════════════════════
+   MULTI-TURN CHAT
+══════════════════════════════════════════════════════ */
+document.getElementById('chat-send').addEventListener('click', sendChat);
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+document.getElementById('chat-input').addEventListener('input', function() {
+  document.getElementById('chat-send').disabled = !this.value.trim();
+});
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  sendBtn.disabled = true;
+
+  const area = document.getElementById('chat-area');
+
+  // 追加用户气泡
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg-user';
+  userDiv.innerHTML = `<div class="bubble-user-q">${text.replace(/</g,'&lt;')}</div>`;
+  area.appendChild(userDiv);
+
+  // 追加卡卡 loading
+  const kakaDiv = document.createElement('div');
+  kakaDiv.className = 'msg-kaka';
+  kakaDiv.innerHTML = `
+    <div class="kaka-av">K</div>
+    <div class="bubble-kaka"><div class="dot-loading"><span></span><span></span><span></span></div></div>
+  `;
+  area.appendChild(kakaDiv);
+  area.scrollTop = area.scrollHeight;
+
+  const bubble = kakaDiv.querySelector('.bubble-kaka');
+  await callDifyChat(text, bubble);
+
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+async function callDifyChat(query, bubble) {
+  const useMock = !DIFY.apiKey || DIFY.apiKey.startsWith('YOUR');
+  if (useMock) {
+    await mockStream(mockChatReply(query), bubble);
+    return;
+  }
+
+  abortCtrl = new AbortController();
+  try {
+    const res = await fetch(`${DIFY.baseUrl}/v1/chat-messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${DIFY.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: {},
+        query,
+        response_mode: 'streaming',
+        conversation_id: conversationId ?? '',
+        user: 'keep-demo',
+      }),
+      signal: abortCtrl.signal,
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '', accumulated = '', started = false;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() ?? '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw || raw === '[DONE]') continue;
+        try {
+          const d = JSON.parse(raw);
+          if (d.conversation_id) conversationId = d.conversation_id;
+          const chunk = d.answer ?? d.text ?? '';
+          if (chunk) {
+            if (!started) { bubble.innerHTML = ''; started = true; }
+            accumulated += chunk;
+            bubble.innerHTML = md(accumulated) + '<span class="cursor-blink"></span>';
+            bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }
+        } catch (_) {}
+      }
+    }
+
+    bubble.innerHTML = md(accumulated || '好的，还有什么想问的？');
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    await mockStream(mockChatReply(query), bubble);
+  }
+}
+
+function mockChatReply(q) {
+  const c = currentCourse;
+  const lower = q.toLowerCase();
+  if (/每天|频率|多久/.test(q))
+    return `这节课 ${c.duration} 分钟，强度${c.difficulty === 'K1' ? '较低，每天练都没问题 💪' : '中等，建议每周练 3-4 次，给肌肉留点恢复时间～'}`;
+  if (/热量|卡路里|消耗/.test(q))
+    return `这节课预计消耗 ${c.calMin}–${c.calMax} 千卡，配合饮食控制效果会更明显哦！`;
+  if (/难吗|难度|跟不上/.test(q))
+    return `${c.difficulty} ${c.level}难度，${c.level === '零基础' ? '完全不用担心，跟着节奏来就行～' : '有一定基础更好上手，跟不上就暂停休息一下，别勉强。'}`;
+  if (/器材|器械|装备/.test(q))
+    return c.category === '力量'
+      ? `这节课需要哑铃或相应器械，找不到可以用矿泉水瓶替代轻重量练练感觉～`
+      : `这节课不需要任何器材，一张垫子就够了 ✅`;
+  return `好问题！关于「${q.slice(0,12)}」—— 根据你目前的状态，我建议你先从这节课开始体验，完成后身体会给你最直接的反馈。遇到不适随时停下来休息哦～`;
 }
 
 /* ── Markdown（**bold** + 换行） ─── */
