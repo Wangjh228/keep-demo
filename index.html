@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keep 种草 Demo</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 32px 16px 48px;
+}
+
+/* ── Phone ─────────────────────────────── */
+.phone {
+  width: 390px;
+  height: 844px;
+  background: #fff;
+  border-radius: 48px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #bbb;
+}
+:root { --green: #00b96b; --green-light: #e8f8f1; }
+
+/* ── Pages ──────────────────────────────── */
+.page {
+  position: absolute; inset: 0;
+  overflow-y: auto; background: #fff;
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
+}
+.page.slide-out    { transform: translateX(-25%); pointer-events: none; }
+.page.slide-right  { transform: translateX(100%); }
+
+/* ── Status bar ─────────────────────────── */
+.status-bar {
+  padding: 14px 24px 6px;
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   HOME
+══════════════════════════════════════════ */
+.search-wrap {
+  padding: 6px 16px 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.search-bar {
+  flex: 1; background: #f4f4f4; border-radius: 20px;
+  padding: 8px 14px; display: flex; align-items: center;
+  gap: 8px; color: #aaa; font-size: 14px;
+}
+.avatar-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #eee; display: flex; align-items: center;
+  justify-content: center; font-size: 16px;
+}
+.top-tabs { display: flex; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.top-tab {
+  flex: 1; text-align: center; padding: 10px 0;
+  font-size: 16px; font-weight: 500; color: #aaa; position: relative;
+}
+.top-tab.active { color: #111; }
+.top-tab.active::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 50%; transform: translateX(-50%);
+  width: 24px; height: 2px; background: #111; border-radius: 1px;
+}
+.icon-row { display: flex; justify-content: space-around; padding: 16px 8px 8px; }
+.icon-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.icon-box {
+  width: 50px; height: 50px; border-radius: 14px; background: #f6f6f6;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.icon-label { font-size: 11px; color: #555; }
+.filter-row {
+  display: flex; gap: 8px; padding: 8px 16px;
+  overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 16px;
+  font-size: 13px; border: 1px solid #e0e0e0; color: #333;
+  cursor: pointer; white-space: nowrap;
+}
+.chip.active { background: #111; color: #fff; border-color: #111; }
+.section-label { padding: 6px 16px 2px; font-size: 13px; color: #aaa; }
+.course-list { flex: 1; overflow-y: auto; }
+.course-card {
+  display: flex; gap: 12px; padding: 12px 16px;
+  cursor: pointer; transition: background .12s;
+}
+.course-card:active { background: #f9f9f9; }
+.course-thumb {
+  width: 120px; height: 82px; border-radius: 8px;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.badge {
+  position: absolute; top: 6px; left: 6px;
+  font-size: 10px; padding: 2px 6px; border-radius: 3px;
+  color: #fff; font-weight: 600; z-index: 1;
+}
+.badge.free { background: var(--green); }
+.badge.official { background: #f59e0b; }
+/* 首页缩略图上的种草入口 */
+.thumb-grass {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,.48);
+  color: #fff; font-size: 11px;
+  padding: 5px 8px;
+  display: flex; align-items: center; gap: 4px;
+  backdrop-filter: blur(2px);
+}
+.thumb-grass-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.course-info { flex: 1; min-width: 0; }
+.c-title {
+  font-size: 14px; font-weight: 500; color: #111; line-height: 1.45;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.c-meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 12px; color: #aaa; }
+.c-desc { font-size: 11px; color: #ccc; margin-top: 3px; }
+.bottom-nav {
+  display: flex; border-top: 1px solid #f0f0f0;
+  padding: 8px 0 28px; flex-shrink: 0;
+}
+.nav-item { flex: 1; text-align: center; font-size: 11px; color: #aaa; padding: 4px 0; }
+.nav-item.active { color: var(--green); font-weight: 600; }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #f55; margin: 0 auto 2px; }
+
+/* ══════════════════════════════════════════
+   DETAIL
+══════════════════════════════════════════ */
+.detail-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 4px; flex-shrink: 0;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; color: #333;
+}
+.nav-right { display: flex; gap: 18px; color: #555; font-size: 17px; }
+.course-cover { width: 100%; padding-bottom: 56.25%; position: relative; flex-shrink: 0; }
+.cover-inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.play-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(255,255,255,.8);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.cover-tag {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0,0,0,.45); color: #fff;
+  font-size: 11px; padding: 3px 8px; border-radius: 4px;
+}
+.d-rating { padding: 10px 16px 2px; display: flex; align-items: center; gap: 4px; font-size: 14px; color: #555; }
+.star { color: #f59e0b; }
+.d-title { padding: 4px 16px 10px; font-size: 20px; font-weight: 700; line-height: 1.3; color: #111; }
+.stats-strip {
+  display: flex; align-items: center;
+  padding: 10px 16px; border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5; gap: 14px;
+}
+.stat-block { display: flex; flex-direction: column; }
+.stat-v { font-size: 16px; font-weight: 700; color: #111; }
+.stat-l { font-size: 11px; color: #aaa; margin-top: 1px; }
+.v-divider { width: 1px; height: 26px; background: #eee; }
+.keep-tag {
+  margin-left: auto; background: var(--green-light);
+  border-radius: 6px; padding: 4px 8px;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.keep-tag-t { font-size: 10px; color: var(--green); font-weight: 600; }
+.keep-tag-s { font-size: 10px; color: #888; }
+.d-instructor { display: flex; align-items: center; gap: 8px; padding: 10px 16px; }
+.instr-av {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #eee; display: flex; align-items: center;
+  justify-content: center; font-size: 14px;
+}
+.d-desc { padding: 2px 16px 14px; font-size: 13px; color: #666; line-height: 1.7; }
+.d-desc .more { color: var(--green); }
+
+/* 种草入口矩形卡 */
+.grass-entry {
+  margin: 0 16px 14px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.grass-entry:active { background: #f9f9f9; }
+.grass-entry-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.grass-entry-text { flex: 1; }
+.grass-entry-q { font-size: 14px; font-weight: 600; color: #111; }
+.grass-entry-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+.grass-entry-arrow { font-size: 16px; color: #ccc; }
+
+.action-strip { display: flex; border-top: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; }
+.act-item {
+  flex: 1; text-align: center; padding: 10px 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; color: #666;
+}
+.act-icon { font-size: 19px; }
+.go-bar { display: flex; align-items: center; padding: 14px 16px 36px; gap: 12px; }
+.mode-btn, .equip-btn {
+  flex: 1; padding: 13px 0; border: 1px solid #e0e0e0; border-radius: 28px;
+  background: #fff; font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px; color: #333;
+}
+.go-btn {
+  width: 66px; height: 66px; border-radius: 50%;
+  background: var(--green); color: #fff; font-size: 20px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   BOTTOM SHEET — 固定高度 + 下滑关闭
+══════════════════════════════════════════ */
+.overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 200;
+  pointer-events: none;
+  transition: background .3s;
+}
+.overlay.open { background: rgba(0,0,0,.45); pointer-events: all; }
+.sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 88%;                        /* 固定高度 */
+  background: #f7f7f7;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.32,.72,0,1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  will-change: transform;
+}
+.overlay.open .sheet { transform: translateY(0); }
+.sheet-handle-wrap {
+  padding: 10px 0 4px;
+  display: flex; justify-content: center;
+  cursor: grab; flex-shrink: 0;
+  touch-action: none;
+}
+.sheet-handle { width: 36px; height: 4px; background: #ddd; border-radius: 2px; }
+.sheet-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 18px 10px; flex-shrink: 0; background: #f7f7f7;
+}
+.sheet-hd-title { font-size: 15px; font-weight: 600; color: #111; }
+.close-btn {
+  width: 28px; height: 28px; border-radius: 50%; background: #e8e8e8;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; color: #666;
+}
+
+/* Chat area */
+.chat-area {
+  flex: 1; overflow-y: auto;
+  padding: 12px 14px 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+/* 用户消息（右对齐） */
+.msg-user { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.user-course-card {
+  background: #fff; border-radius: 12px; border: 1px solid #ebebeb;
+  padding: 10px 12px; display: flex; gap: 9px; align-items: center;
+  max-width: 80%;
+}
+.user-card-thumb { width: 42px; height: 42px; border-radius: 8px; flex-shrink: 0; }
+.user-card-name { font-size: 12px; font-weight: 600; color: #111; line-height: 1.4; }
+.user-card-meta { font-size: 11px; color: #aaa; margin-top: 2px; }
+.bubble-user-q {
+  background: var(--green);
+  color: #fff;
+  border-radius: 16px 4px 16px 16px;
+  padding: 9px 13px;
+  font-size: 14px;
+  max-width: 70%;
+  line-height: 1.5;
+}
+
+/* 卡卡消息（左对齐） */
+.msg-kaka { display: flex; align-items: flex-start; gap: 8px; }
+.kaka-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+  margin-top: 2px;
+}
+.bubble-kaka {
+  background: #fff;
+  border-radius: 4px 16px 16px 16px;
+  padding: 12px 14px;
+  font-size: 14px; color: #222; line-height: 1.85;
+  max-width: calc(100% - 44px);
+  border: 1px solid #ebebeb;
+}
+.bubble-kaka strong { font-weight: 700; }
+.bubble-kaka p { margin: 0; }
+.bubble-kaka p + p { margin-top: 10px; }
+
+/* Loading dots */
+.dot-loading { display: flex; gap: 5px; align-items: center; padding: 4px 0; }
+.dot-loading span {
+  width: 7px; height: 7px; border-radius: 50%; background: #bbb;
+  animation: dl 1.1s infinite;
+}
+.dot-loading span:nth-child(2) { animation-delay: .18s; }
+.dot-loading span:nth-child(3) { animation-delay: .36s; }
+@keyframes dl {
+  0%,80%,100% { transform: scale(.55); opacity: .35; }
+  40%          { transform: scale(1);   opacity: 1; }
+}
+.cursor-blink {
+  display: inline-block; width: 2px; height: 14px;
+  background: #555; margin-left: 1px; vertical-align: middle;
+  animation: cb .75s infinite;
+}
+@keyframes cb { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ══════════════ HOME ══════════════ -->
+  <div class="page" id="pg-home">
+    <div class="status-bar"><span>10:06</span><span>●●●● 100%</span></div>
+    <div class="search-wrap">
+      <div class="search-bar"><span>🔍</span><span>瘦腿帕梅拉</span></div>
+      <div class="avatar-btn">🔮</div>
+    </div>
+    <div class="top-tabs">
+      <div class="top-tab active">课程</div>
+      <div class="top-tab">计划</div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-item"><div class="icon-box">⊞</div><span class="icon-label">全部课程</span></div>
+      <div class="icon-item"><div class="icon-box">▷</div><span class="icon-label">免费课</span></div>
+      <div class="icon-item"><div class="icon-box">📡</div><span class="icon-label">直播课</span></div>
+      <div class="icon-item"><div class="icon-box">🤸</div><span class="icon-label">动作库</span></div>
+      <div class="icon-item"><div class="icon-box">📍</div><span class="icon-label">找路线</span></div>
+    </div>
+    <div class="filter-row">
+      <div class="chip active">👍 精选</div>
+      <div class="chip">🏃 全身减脂</div>
+      <div class="chip">🧘 瘦背美背</div>
+      <div class="chip">筛选 ↓</div>
+    </div>
+    <div class="section-label">找课程</div>
+    <div class="course-list" id="course-list"></div>
+    <div class="bottom-nav">
+      <div class="nav-item active">课程</div>
+      <div class="nav-item">日程</div>
+      <div class="nav-item">运动</div>
+      <div class="nav-item">发现<div class="nav-dot"></div></div>
+      <div class="nav-item">我的<div class="nav-dot"></div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ DETAIL ══════════════ -->
+  <div class="page slide-right" id="pg-detail">
+    <div class="detail-nav">
+      <div class="back-btn" id="back-btn">←</div>
+      <div class="nav-right"><span>👥</span><span>↑</span><span>···</span></div>
+    </div>
+    <div id="detail-body" style="flex:1;overflow-y:auto;"></div>
+  </div>
+
+  <!-- ══════════════ BOTTOM SHEET ══════════════ -->
+  <div class="overlay" id="overlay">
+    <div class="sheet" id="sheet">
+      <div class="sheet-handle-wrap" id="sheet-handle-wrap">
+        <div class="sheet-handle"></div>
+      </div>
+      <div class="sheet-hd">
+        <span class="sheet-hd-title">卡卡种草</span>
+        <div class="close-btn" id="close-btn">✕</div>
+      </div>
+      <div class="chat-area" id="chat-area"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DIFY CONFIG
+══════════════════════════════════════════════════════ */
+const DIFY = {
+  apiKey:  'app-kPgAuweg1Uzglk9HMKFdpNNl',
+  baseUrl: 'https://dify14.sre.gotokeep.com',
+  biz:     'agamotto',
+  tags:    'USER_BASIC,USER_STATUS,USER_TYPE,USER_INJURY,USER_PREFERENCE,USER_POSTURE,ENVIRONMENT,USER_GOAL,USER_ROUTINE_ACTIVITY,USER_TODAY_ACTIVITY,TODAY_SPORT,TODAY_CONSUMPTION,TODAY_DIET_INGESTION,TODAY_SLEEP,TODAY_STEP,TODAY_SUMMARY,ACTIVITY_STAT',
+};
+
+/* ══════════════════════════════════════════════════════
+   COURSE DATA
+   courseId: 真实 Keep 课程 ID，给 Dify 用
+   其余字段：用于展示
+══════════════════════════════════════════════════════ */
+const COURSES = [
+  {
+    id: 1,
+    courseId: '6268e15820934300019599c7',
+    userId:   '6a0542347be25e0001303179',
+    name: '40分钟室内燃脂走，膝盖友好！',
+    difficulty: 'K2', level: '初学',
+    duration: 40, calMin: 160, calMax: 220,
+    instructor: 'April', rating: 8.3,
+    finishedCount: '348万', category: '有氧',
+    isFree: true, color: '#fde68a',
+    desc: '没深蹲，膝盖友好，无器材小空间，动作简单保持心率，燃脂效果好...',
+    mockGrass: `这节燃脂走太适合你啦～膝盖友好又能帮你稳稳减脂，试试看吧✨\n\n**1. 膝盖友好，运动无负担**\n你之前膝盖有过不适，这节课完全不用深蹲跳跃，全是低冲击的踏步和伸展动作，跟着走40分钟膝盖也不会有压力，放心动起来～\n\n**2. 室内小空间就能练，轻松补运动量**\n课程不需要器材，小空间就能完成。今天还没安排运动的话，跟着它活动身体，既能消耗热量又不会太累，帮你朝着减重目标迈一步。\n\n**3. 动作简单易坚持，很多人都练出效果了**\n课程动作设计得很简单，跟着节奏走就行。不少人反馈坚持后体重和腰围都有变化，像有位用户练了十几次就瘦了4公斤，你也可以试试这种轻松的减脂方式～`,
+  },
+  {
+    id: 2,
+    courseId: '55d2e472cb23bbdb81bafbf6',
+    userId:   '6a0542347be25e0001303179',
+    name: '下肢拉伸',
+    difficulty: 'K1', level: '零基础',
+    duration: 8, calMin: 18, calMax: 28,
+    instructor: 'Keep 官方', rating: 8.1,
+    finishedCount: '4733万', category: '拉伸',
+    isFree: true, color: '#d1fae5',
+    desc: '拉伸打造纤细腿部形态，使腿部线条更为流畅，跑步骑行后放松必备...',
+    mockGrass: `跑完步后来套下肢拉伸，腿部线条会更流畅哦～\n\n**1. 跑后放松黄金搭档**\n你喜欢跑步，每次跑完腿肯定有点紧绷吧？这节课专门针对大腿、小腿设计拉伸动作，能促进血液循环，帮你放松紧张的肌肉，就像给双腿做了个温柔的"解压SPA"🌿。\n\n**2. 每天8分钟，轻松打造纤细腿型**\n课程难度比较低，8分钟就能做完，完全没负担。很多人反馈练完感觉腿变修长了，你定制了瘦腿计划还没开始，正好用它每天唤醒腿部线条，为后续训练打基础✨。\n\n**3. 安全友好，避开伤病隐患**\n之前手腕、腰、膝盖这些部位有过不适，这节课都是静态拉伸为主，动作缓慢温和，不会给关节带来压力，放心跟着练就好～`,
+  },
+  {
+    id: 3,
+    courseId: '65795149b5bc89000102432b',
+    userId:   '6a0542347be25e0001303179',
+    name: '17 分钟哑铃腹部训练 · 线条紧致',
+    difficulty: 'K2', level: '初学',
+    duration: 17, calMin: 90, calMax: 130,
+    instructor: 'Keep 官方', rating: 8.5,
+    finishedCount: '23万', category: '力量',
+    isFree: false, isOfficial: true, color: '#dbeafe',
+    desc: '减脂同时增加力量训练，保持肌肉提高代谢，改善腹部线条...',
+    mockGrass: `这节哑铃腹部训练很适合你现在练哦～既能帮你紧致腹部线条，又能让减脂更有效率✨\n\n**1. 减脂塑形双管齐下**\n课程在减脂的同时加入力量训练，能帮你保持肌肉、提高代谢，让减脂更高效，还能改善体型，让腹部线条更紧致。\n\n**2. 短时高效，轻松完成**\n17分钟的时长很适合碎片时间练习，不会占用你太多时间，又能有效消耗热量，适合想短时高效训练的你。\n\n**3. 已有超20万人练过**\n很多人都通过这节课锻炼腹部，跟着练既能感受群体运动的氛围，又能参考大家的训练体验，让运动更有动力。`,
+  },
+  {
+    id: 4,
+    courseId: '66c6cb393b953e00011a02e9',
+    userId:   '6a0542347be25e0001303179',
+    name: '《落（花开花落日升日没）》· 成品舞跟练 · 纯享版',
+    difficulty: 'K3', level: '进阶',
+    duration: 3, calMin: 65, calMax: 100,
+    instructor: 'Keep 官方', rating: 8.3,
+    finishedCount: '32万', category: '舞蹈',
+    isFree: false, color: '#fce7f3',
+    desc: '中国古典舞成品舞跟练，涵盖身韵、舞姿、旋转等古典舞元素...',
+    mockGrass: `这节古典舞跟练课很适合你现在试试哦～既能满足你对运动的兴趣，又能轻松帮你推进减重目标🌸\n\n**1. 轻盈舞蹈燃脂，不伤旧伤更安心**\n课程是纯舞蹈跟练，动作以身韵和舞姿为主，没有高冲击跳跃，完美避开了你曾有过的手腕、腰、膝盖和肩部旧伤风险，运动起来更放心。\n\n**2. 碎片时间轻松动，新手也能有成就感**\n才3分钟的时长，随时能挤出时间练习。很多用户反馈"简单易学，跳完超有成就感"，像你这样刚开始接触运动的话，这种低压力的课程能帮你慢慢养成习惯。\n\n**3. 边跳边瘦，还能悄悄提升气质**\n跟着古风音乐舞动，既能消耗热量帮你减重，又能在抬手投足间练出古典韵味。不用器械，一小块空地就能开始，让运动变成一种享受～`,
+  },
+];
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let currentCourse = null;
+let abortCtrl = null;
+
+/* ══════════════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════════════ */
+function renderHome() {
+  document.getElementById('course-list').innerHTML = COURSES.map(c => `
+    <div class="course-card" onclick="openDetail(${c.id})">
+      <div class="course-thumb" style="background:${c.color}">
+        ${c.isFree     ? '<span class="badge free">免费</span>' : ''}
+        ${c.isOfficial ? '<span class="badge official">官方精品</span>' : ''}
+        <div class="thumb-grass" onclick="event.stopPropagation();openGrass(${c.id})">
+          <div class="thumb-grass-dot">K</div>
+          <span>这节课适合我吗？</span>
+        </div>
+      </div>
+      <div class="course-info">
+        <div class="c-title">${c.name}</div>
+        <div class="c-meta">
+          <span>${c.difficulty} ${c.level}</span><span>·</span><span>${c.duration} 分钟</span>
+        </div>
+        <div class="c-meta" style="margin-top:2px">
+          <span>${c.instructor}</span><span>·</span><span>评分 ${c.rating}</span>
+        </div>
+        <div class="c-desc">${c.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   DETAIL
+══════════════════════════════════════════════════════ */
+function openDetail(id) {
+  currentCourse = COURSES.find(c => c.id === id);
+  const c = currentCourse;
+  document.getElementById('detail-body').innerHTML = `
+    <div class="course-cover">
+      <div class="cover-inner" style="background:${c.color}">
+        <div class="play-circle">▶</div>
+      </div>
+      <div class="cover-tag">课程分段</div>
+    </div>
+    <div class="d-rating"><span class="star">★</span> ${c.rating} 分</div>
+    <div class="d-title">${c.name}</div>
+    <div class="stats-strip">
+      <div class="stat-block"><span class="stat-v">${c.difficulty}</span><span class="stat-l">${c.level}</span></div>
+      <div class="v-divider"></div>
+      <div class="stat-block"><span class="stat-v">${c.duration}</span><span class="stat-l">分钟</span></div>
+      <div class="v-divider"></div>
+      <div class="stat-block"><span class="stat-v">${c.calMin}–${c.calMax}</span><span class="stat-l">千卡</span></div>
+      <div class="keep-tag">
+        <span class="keep-tag-t">◎ Keep智能互联</span>
+        <span class="keep-tag-s">精准测量消耗</span>
+      </div>
+    </div>
+    <div class="d-instructor">
+      <div class="instr-av">👤</div>
+      <span style="font-size:13px;color:#333">${c.instructor}</span>
+    </div>
+    <div class="d-desc">${c.desc}<span class="more">…更多</span></div>
+
+    <!-- 种草入口矩形卡 -->
+    <div class="grass-entry" onclick="openGrass(${c.id})">
+      <div class="grass-entry-av">K</div>
+      <div class="grass-entry-text">
+        <div class="grass-entry-q">这节课适合我吗？</div>
+        <div class="grass-entry-sub">卡卡帮你分析</div>
+      </div>
+      <span class="grass-entry-arrow">›</span>
+    </div>
+
+    <div class="action-strip">
+      <div class="act-item"><span class="act-icon">≡</span>想练</div>
+      <div class="act-item"><span class="act-icon">📅</span>加日历</div>
+      <div class="act-item"><span class="act-icon">📺</span>投屏</div>
+      <div class="act-item"><span class="act-icon">💬</span><span>${c.finishedCount}</span></div>
+      <div class="act-item"><span class="act-icon">✓</span>练过</div>
+    </div>
+    <div class="go-bar">
+      <div class="mode-btn">⚙ 训练模式</div>
+      <div class="go-btn">GO</div>
+      <div class="equip-btn">🥊 装备</div>
+    </div>
+  `;
+  document.getElementById('pg-home').classList.add('slide-out');
+  document.getElementById('pg-detail').classList.remove('slide-right');
+}
+
+document.getElementById('back-btn').onclick = () => {
+  document.getElementById('pg-detail').classList.add('slide-right');
+  document.getElementById('pg-home').classList.remove('slide-out');
+};
+
+/* ══════════════════════════════════════════════════════
+   GRASS SHEET — open
+══════════════════════════════════════════════════════ */
+function openGrass(id) {
+  currentCourse = COURSES.find(c => c.id === id);
+  if (abortCtrl) { abortCtrl.abort(); abortCtrl = null; }
+
+  const c = currentCourse;
+  const area = document.getElementById('chat-area');
+
+  // 用户消息：课程卡 + 问句
+  area.innerHTML = `
+    <div class="msg-user">
+      <div class="user-course-card">
+        <div class="user-card-thumb" style="background:${c.color}"></div>
+        <div>
+          <div class="user-card-name">${c.name}</div>
+          <div class="user-card-meta">${c.difficulty} · ${c.duration}min · ${c.calMin}–${c.calMax}kcal</div>
+        </div>
+      </div>
+      <div class="bubble-user-q">这节课适合我吗？</div>
+    </div>
+    <div class="msg-kaka">
+      <div class="kaka-av">K</div>
+      <div class="bubble-kaka" id="kaka-bubble">
+        <div class="dot-loading"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('overlay').classList.add('open');
+  callDify(c);
+}
+
+/* ══════════════════════════════════════════════════════
+   CLOSE + SWIPE DOWN
+══════════════════════════════════════════════════════ */
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeSheet();
+});
+document.getElementById('close-btn').onclick = closeSheet;
+
+function closeSheet() {
+  document.getElementById('overlay').classList.remove('open');
+  if (abortCtrl) { abortCtrl.abort(); abortCtrl = null; }
+}
+
+// Swipe down to close
+(function() {
+  const wrap  = document.getElementById('sheet-handle-wrap');
+  const sheet = document.getElementById('sheet');
+  let startY = 0, dragging = false;
+
+  wrap.addEventListener('touchstart', e => {
+    startY   = e.touches[0].clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  wrap.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0) sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', e => {
+    dragging = false;
+    sheet.style.transition = '';
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > 90) {
+      closeSheet();
+      sheet.style.transform = '';
+    } else {
+      sheet.style.transform = '';
+    }
+  });
+
+  // Mouse drag (desktop testing)
+  wrap.addEventListener('mousedown', e => {
+    startY   = e.clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+    const onMove = ev => {
+      if (!dragging) return;
+      const dy = ev.clientY - startY;
+      if (dy > 0) sheet.style.transform = `translateY(${dy}px)`;
+    };
+    const onUp = ev => {
+      dragging = false;
+      sheet.style.transition = '';
+      const dy = ev.clientY - startY;
+      if (dy > 90) { closeSheet(); sheet.style.transform = ''; }
+      else sheet.style.transform = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
+   DIFY CALL
+══════════════════════════════════════════════════════ */
+async function callDify(course) {
+  const bubble = document.getElementById('kaka-bubble');
+
+  // Mock mode fallback（API 不通时）
+  const useMock = !DIFY.apiKey || DIFY.apiKey.startsWith('YOUR');
+  if (useMock) {
+    await mockStream(course.mockGrass, bubble);
+    return;
+  }
+
+  abortCtrl = new AbortController();
+  try {
+    const res = await fetch(`${DIFY.baseUrl}/v1/workflows/run`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${DIFY.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: {
+          course_id: course.courseId,
+          userId:    course.userId,
+          biz:       DIFY.biz,
+          tags:      DIFY.tags,
+        },
+        response_mode: 'streaming',
+        user: 'keep-demo',
+      }),
+      signal: abortCtrl.signal,
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '', accumulated = '', started = false;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() ?? '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw || raw === '[DONE]') continue;
+        try {
+          const d = JSON.parse(raw);
+
+          // 流式 token（text_chunk 或 node 流式输出）
+          const chunk = d.data?.text ?? d.answer ?? d.text ?? '';
+          if (chunk) {
+            if (!started) { bubble.innerHTML = ''; started = true; }
+            accumulated += chunk;
+            bubble.innerHTML = md(accumulated) + '<span class="cursor-blink"></span>';
+            bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }
+
+          // 最终输出
+          if (d.event === 'workflow_finished') {
+            const finalText = d.data?.outputs?.text ?? accumulated;
+            bubble.innerHTML = md(finalText);
+          }
+        } catch (_) {}
+      }
+    }
+
+    if (!started) {
+      bubble.innerHTML = `<span style="color:#aaa;font-size:13px">暂未获取到分析结果</span>`;
+    } else {
+      bubble.innerHTML = md(accumulated);
+    }
+
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    // 降级到 mock
+    await mockStream(course.mockGrass, bubble);
+  }
+}
+
+/* ── Markdown（**bold** + 换行） ─── */
+function md(text) {
+  const escaped = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return escaped
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+}
+
+/* ── Mock 流式 ──────────────────── */
+async function mockStream(text, bubble) {
+  await sleep(600);
+  bubble.innerHTML = '';
+  let rendered = '';
+  for (let i = 0; i < text.length; i++) {
+    rendered += text[i];
+    bubble.innerHTML = md(rendered) + '<span class="cursor-blink"></span>';
+    bubble.parentElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    await sleep(15 + Math.random() * 12);
+  }
+  bubble.innerHTML = md(rendered);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── Init ────────────────────────── */
+renderHome();
+</script>
+</body>
+</html>
