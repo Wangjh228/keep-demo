@@ -329,9 +329,7 @@ body {
 
 /* ── Sheet course header ────────────── */
 .sheet-course-hd {
-  display: flex; gap: 12px; align-items: center;
-  padding: 10px 16px 12px; background: #f7f7f7;
-  border-bottom: 1px solid #e8e8e8; flex-shrink: 0;
+  display: none;
 }
 .sheet-cover-thumb {
   width: 80px; height: 54px; border-radius: 8px;
@@ -618,21 +616,17 @@ function openGrass(id) {
 
   const c = currentCourse;
 
-  // 课程头部
-  document.getElementById('sheet-course-hd').innerHTML = `
-    <div class="sheet-cover-thumb" style="background:${c.color}">
-      <div class="sheet-cover-play">▶</div>
-    </div>
-    <div style="flex:1;min-width:0">
-      <div class="sheet-course-name">${c.name}</div>
-      <div class="sheet-course-meta">${c.difficulty} ${c.level} · ${c.duration} 分钟 · ★ ${c.rating}</div>
-    </div>
-  `;
-
   // 聊天区：仅用户问句 + 卡卡loading
   const area = document.getElementById('chat-area');
   area.innerHTML = `
     <div class="msg-user">
+      <div class="user-course-card">
+        <div class="user-card-thumb" style="background:${c.color}"></div>
+        <div>
+          <div class="user-card-name">${c.name}</div>
+          <div class="user-card-meta">${c.difficulty} ${c.level} · ${c.duration} 分钟 · ★ ${c.rating}</div>
+        </div>
+      </div>
       <div class="bubble-user-q">这节课适合我吗？</div>
     </div>
     <div class="msg-kaka">
