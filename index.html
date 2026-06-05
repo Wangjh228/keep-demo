@@ -178,27 +178,28 @@ body {
 .d-desc { padding: 2px 16px 14px; font-size: 13px; color: #666; line-height: 1.7; }
 .d-desc .more { color: var(--green); }
 
-/* 种草入口矩形卡 */
+/* 种草入口小胶囊 */
 .grass-entry {
+  display: inline-flex; align-items: center; gap: 6px;
   margin: 0 16px 14px;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 12px;
-  padding: 12px 14px;
-  display: flex; align-items: center; gap: 10px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  border: 1.5px solid #e0d6f5;
+  background: #f7f3ff;
   cursor: pointer;
   transition: background .12s;
 }
-.grass-entry:active { background: #f9f9f9; }
+.grass-entry:active { background: #ede6ff; }
 .grass-entry-av {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--green);
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #7c3aed;
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+  font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;
 }
 .grass-entry-text { flex: 1; }
-.grass-entry-q { font-size: 14px; font-weight: 600; color: #111; }
-.grass-entry-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
-.grass-entry-arrow { font-size: 16px; color: #ccc; }
+.grass-entry-q { font-size: 13px; font-weight: 600; color: #5b21b6; }
+.grass-entry-sub { display: none; }
+.grass-entry-arrow { font-size: 13px; color: #a78bfa; }
 
 .action-strip { display: flex; border-top: 1px solid #f5f5f5; border-bottom: 1px solid #f5f5f5; }
 .act-item {
